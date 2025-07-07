@@ -1,23 +1,18 @@
 import type { Activity } from '../types'
 
 export type ActivityActions =
+  | { type: 'save-activity'; payload: { newActivity: Activity } }
+  | { type: 'set-activeId'; payload: { id: Activity['id'] } }
+  | { type: 'delete-activity'; payload: { id: Activity['id'] } }
+  | { type: 'restart-app' }
   | {
-      type: 'save-activity'
-      payload: { newActivity: Activity }
-    }
-  | {
-      type: 'set-activeId'
-      payload: { id: Activity['id'] }
-    }
-  | {
-      type: 'delete-activity'
-      payload: { id: Activity['id'] }
-    }
-  | {
-      type: 'restart-app'
+      type: 'focus-form'
+      payload: {
+        formRef: React.RefObject<HTMLDivElement | null>
+      }
     }
 
-export type ActivitiyState = {
+export type ActivityState = {
   activities: Activity[]
   activeId: Activity['id']
 }
@@ -26,13 +21,13 @@ const localStorageActivities = (): Activity[] => {
   const activities = localStorage.getItem('activities')
   return activities ? JSON.parse(activities) : []
 }
-export const initialState: ActivitiyState = {
+export const initialState: ActivityState = {
   activities: localStorageActivities(),
   activeId: '',
 }
 
 export const activityReducer = (
-  state: ActivitiyState = initialState,
+  state: ActivityState = initialState,
   action: ActivityActions,
 ) => {
   if (action.type === 'save-activity') {
@@ -72,6 +67,15 @@ export const activityReducer = (
     return {
       activities: [],
       activeId: '',
+    }
+  }
+
+  if (action.type === 'focus-form') {
+    if (action.payload.formRef.current) {
+      action.payload.formRef.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      })
     }
   }
   return state

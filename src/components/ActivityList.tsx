@@ -1,24 +1,22 @@
-import { useMemo, type Dispatch } from 'react'
+import { useMemo } from 'react'
 import { PencilSquareIcon, XCircleIcon } from '@heroicons/react/24/outline'
-
 import type { Activity } from '../types'
 import { categories } from '../data/categories'
-import type { ActivityActions } from '../reducers/activityReducer'
+import { useActivity } from '../hooks/useActivity'
 
-type ActivityListProps = {
-  activities: Activity[]
-  dispatch: Dispatch<ActivityActions>
-}
-export default function ActivityList({
-  activities,
-  dispatch,
-}: ActivityListProps) {
+export default function ActivityList() {
+  const { state, dispatch, formRef } = useActivity()
+
   const categoryName = useMemo(
     () => (category: Activity['category']) =>
       categories.map(cat => (cat.id === category ? cat.name : '')),
     [],
   )
-  const isEmptyActivities = useMemo(() => activities.length === 0, [activities])
+  const isEmptyActivities = useMemo(
+    () => state.activities.length === 0,
+    [state.activities],
+  )
+
   return (
     <>
       <h2 className="text-4xl font-bold text-slate-600 text-center">
@@ -28,7 +26,7 @@ export default function ActivityList({
       {isEmptyActivities ? (
         <p className="text-center my-5">You don't have any activities yet...</p>
       ) : (
-        activities.map(activity => (
+        state.activities.map(activity => (
           <div
             key={activity.id}
             className="px-5 py-10 bg-white mt-5 flex justify-between shadow"
@@ -50,12 +48,17 @@ export default function ActivityList({
             </div>
             <div className="flex gap-5 items-center">
               <button
-                onClick={() =>
+                onClick={() => {
                   dispatch({
                     type: 'set-activeId',
                     payload: { id: activity.id },
                   })
-                }
+
+                  dispatch({
+                    type: 'focus-form',
+                    payload: { formRef: formRef },
+                  })
+                }}
               >
                 <PencilSquareIcon className="h-8 w-8 text-gray-800" />
               </button>
