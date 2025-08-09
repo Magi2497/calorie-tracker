@@ -22,4 +22,4 @@ Calorie Tracker is a responsive React web application that allows users to track
 
 ## 🔗 Live Demo
 
-👉 [Click here to view the live demo](https://app.netlify.com/projects/calorie-tracker-cv-magi/overview)
+👉 [Click here to view the live demo](https://calorie-tracker-cv-magi.netlify.app/)
